@@ -1,0 +1,32 @@
+<div class="user-details">
+  <div style="display: flex">
+    <button mat-icon-button (click)="goBack()">
+       <mat-icon>arrow_back</mat-icon>
+    </button>
+  </div>
+  <form [formGroup]="userForm">
+    <mat-form-field appearance="fill">
+      <mat-label>user</mat-label>
+      <input matInput>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>host</mat-label>
+      <input matInput>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Password</mat-label>
+      <input matInput [type]="hide ? 'password' : 'text'">
+      <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <button mat-raised-button class="actionBtn" color="primary" (click)="saveUser()">
+      Save user
+    </button>
+
+  </form>
+
+</div>

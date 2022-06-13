@@ -1,0 +1,130 @@
+<div class="table-details">
+    <div style="display: flex">
+        <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+        <h2 *ngIf="tableDetails">{{ database }}.{{ table }}</h2>
+        <h2 *ngIf="!tableDetails">New table on {{ database }}</h2>
+    </div>
+
+    <hr />
+    <form class="form" [formGroup]="tableForm" (submit)="save()">
+        <mat-form-field appearance="fill">
+            <mat-label>Table Name</mat-label>
+            <input formControlName="name" matInput />
+        </mat-form-field>
+    </form>
+    <mat-tab-group mat-align-tabs="start">
+        <mat-tab label="Structure">
+            <button type="button" (click)="addColumn()" mat-raised-button color="primary">
+        Add Column
+      </button>
+            <form [formGroup]="tableForm">
+                <div formArrayName="columns">
+                    <div class="column" *ngFor="let column of columns.controls; let index = index" [formGroupName]="index">
+                        <mat-form-field>
+                            <mat-label>Column</mat-label>
+                            <input formControlName="field" matInput />
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-select placeholder="Type" formControlName="type">
+                                <mat-option value="int(11)">INT</mat-option>
+                                <mat-option value="varchar(255)">VARCHAR</mat-option>
+                                <mat-option value="tinyint(1)">BOOLEAN</mat-option>
+                                <mat-option value="date">DATE</mat-option>
+                                <mat-option value="char(255)">CHAR</mat-option>
+                                <mat-option value="text(255)">TEXT</mat-option>
+                                <mat-option value="float">FLOAT</mat-option>
+                                <mat-option value="double">DOUBLE</mat-option>
+                                <mat-option value="decimal(10,2)">DECIMAL</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-select placeholder="Key" formControlName="key">
+                                <mat-option value="PRI">PRIMARY</mat-option>
+                                <mat-option value="MUL" disabled="true">FOREIGN</mat-option>
+                                <mat-option value=""></mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>Null?</mat-label>
+                            <mat-select formControlName="null">
+                                <mat-option value="YES"> Yes </mat-option>
+                                <mat-option value="NO"> No </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>default</mat-label>
+                            <input formControlName="default" matInput />
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>Extra</mat-label>
+                            <input formControlName="extra" matInput />
+                        </mat-form-field>
+                        <button class="delete-btn" mat-mini-fab color="warn" (click)="removeColumn(index)">
+                            <mat-icon>remove</mat-icon>
+                        </button>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button mat-raised-button class="actionBtn" color="primary" (click)="save()">
+            Save table
+          </button>
+                    <button type="button" *ngIf="tableDetails" mat-flat-button class="actionBtn" color="warn" (click)="delete()">
+            Delete
+          </button>
+                </div>
+            </form>
+        </mat-tab>
+        <mat-tab label="Foreign Keys">
+            <button type="button" (click)="addRelation()" mat-raised-button color="primary">
+        Add Relation
+      </button>
+            <form [formGroup]="relationsForm">
+                <div formArrayName="relations">
+                    <div class="column" *ngFor="let relation of relations.controls; let index = index" [formGroupName]="index">
+                        <mat-form-field>
+                            <mat-label>Constraint Name</mat-label>
+                            <input formControlName="CONSTRAINT_NAME" matInput />
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>Column Name</mat-label>
+                            <mat-select formControlName="COLUMN_NAME">
+                                <mat-option *ngFor="let column of tableColumns[table]" [value]="column.Field">
+                                    {{ column.Field }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>Referenced Table</mat-label>
+                            <mat-select formControlName="REFERENCED_TABLE_NAME">
+                                <mat-option *ngFor="let dbTable of dbTables" [value]="dbTable.name">
+                                    {{ dbTable.name }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>Referenced Column</mat-label>
+                            <mat-select formControlName="REFERENCED_COLUMN_NAME">
+                                <mat-option *ngFor="
+                                  let column of tableColumns[
+                                  (relation.get('REFERENCED_TABLE_NAME') || {}).value
+                                  ]
+                                " [value]="column.Field">
+                                    {{ column.Field }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <button type="button" class="delete-btn" style="margin-right: 1em" mat-mini-fab color="primary" *ngIf="relations.at(index).get('isNew')?.value" (click)="saveRelation(index)">
+                              <mat-icon>save</mat-icon>
+                         </button>
+                        <button type="button" class="delete-btn" mat-mini-fab color="warn" (click)="removeRelation(index)">
+                              <mat-icon>remove</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </mat-tab>
+        <mat-tab *ngIf="tableDetails" label="Data">Data</mat-tab>
+    </mat-tab-group>
+</div>

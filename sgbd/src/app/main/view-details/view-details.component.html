@@ -1,0 +1,72 @@
+<div class="view-details">
+    <div style="display: flex">
+        <button mat-icon-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+        <h2 *ngIf="!tableDetails">New view on {{ database }}</h2>
+    </div>
+
+    <hr/>
+    <form class="form" [formGroup]="viewForm">
+        <mat-form-field appearance="fill">
+            <mat-label>View Name</mat-label>
+            <input formControlName="name" matInput />
+        </mat-form-field>
+        <button type="button" (click)="addView()" mat-raised-button color="primary">
+          Create View
+        </button>
+        <form [formGroup]="viewForm">
+            <div formArrayName="columns">
+                <div class="column" *ngFor="let view of columns.controls; let index = index" [formGroupName]="index">
+                    <mat-form-field>
+                        <mat-label>Selection</mat-label>
+                        <input formControlName="selection" matInput />
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>From</mat-label>
+                        <mat-select formControlName="from">
+                            <mat-option *ngFor="let dbTable of dbTables" [value]="dbTable.name">
+                                {{ dbTable.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Where</mat-label>
+                        <mat-select formControlName="where">
+                            <mat-option *ngFor="
+                            let column of tableColumns[
+                            (view.get('from') || {}).value
+                            ]
+                          " [value]="column.Field">
+                                {{ column.Field }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Operator</mat-label>
+                        <mat-select formControlName="operator">
+                            <mat-option value="="> = </mat-option>
+                            <mat-option value=">"> > </mat-option>
+                            <mat-option value=''> Menor </mat-option>
+                            <mat-option value=">="> >= </mat-option>
+                            <mat-option value="="> = </mat-option>
+                            <mat-option value=">"> > </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Condition</mat-label>
+                        <input formControlName="condition" matInput />
+                    </mat-form-field>
+                </div>
+            </div>
+        </form>
+        <div class="actions">
+            <button mat-raised-button class="actionBtn" color="primary" (click)="save()">
+                   SaveView
+            </button>
+            <button type="button" *ngIf="tableDetails" mat-flat-button class="actionBtn" color="warn" (click)="delete()">
+                    Delete
+            </button>
+        </div>
+    </form>
+</div>

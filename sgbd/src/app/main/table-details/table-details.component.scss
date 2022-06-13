@@ -1,0 +1,30 @@
+.column {
+  display: flex;
+  margin-top: 16px;
+  height: 42px;
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  padding: 8px;
+  justify-content: space-around;
+}
+
+.actions {
+  padding: 16px;
+  justify-content: end;
+  & button {
+    margin-left: 1em;
+  }
+}
+
+form {
+  width: fit-content;
+}
+
+.table-details {
+  padding-bottom: 3em;
+}
+
+.delete-btn {
+  zoom: 0.65;
+}

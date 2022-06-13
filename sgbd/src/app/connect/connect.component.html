@@ -1,0 +1,29 @@
+<div class="connect-form">
+  <form class="form" [formGroup]="connectForm" (submit)="submit()">
+    <mat-form-field appearance="fill">
+      <mat-label>host</mat-label>
+      <input formControlName="host" matInput />
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>port</mat-label>
+      <input formControlName="port" matInput />
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>user</mat-label>
+      <input formControlName="user" matInput />
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>password</mat-label>
+      <input type="password" formControlName="password" matInput />
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>database</mat-label>
+      <input
+        placeholder="Leave it empty for none"
+        formControlName="database"
+        matInput
+      />
+    </mat-form-field>
+    <button mat-raised-button color="primary">Connect</button>
+  </form>
+</div>

@@ -1,0 +1,47 @@
+<mat-drawer-container class="container">
+  <mat-drawer mode="side" class="sidenav" opened>
+    <h3 class="title">Databases</h3>
+    <mat-selection-list class="list" #dbs [multiple]="false">
+      <button mat-flat-button color="primary" (click)="openDB()">
+        <mat-icon aria-label="Example home icon">add</mat-icon>Create DB
+      </button>
+      <mat-list-option
+        *ngFor="let db of databases"
+        [value]="db.Database"
+        (click)="openDB(db.Database)"
+      >
+        {{ db.Database }}
+      </mat-list-option>
+    </mat-selection-list>
+  </mat-drawer>
+  <mat-drawer-content class="content">
+      <mat-tab-group>
+        <mat-tab label="Main">
+          <router-outlet></router-outlet>
+        </mat-tab>
+        <mat-tab label="Users">
+          <mat-selection-list cass="list" #usr [multiple]="false">
+          <h2>Users</h2>
+
+            <button mat-raised-button class="actionBtn" color="primary" (click)="openUser()">Create User</button>
+      <hr />
+
+          <mat-list-option
+          *ngFor="let usr of users"
+          [value]="usr.user"
+          (click)="openUser(usr.user)"
+          >        {{ usr.user }}
+          </mat-list-option>
+          </mat-selection-list>
+        </mat-tab>
+      <mat-tab label="Backup">
+        <h2>Backup</h2>
+      </mat-tab>
+      <mat-tab label="Procedures">
+        <h2>Procedures</h2>
+      </mat-tab>
+
+      </mat-tab-group>
+
+  </mat-drawer-content>
+</mat-drawer-container>
