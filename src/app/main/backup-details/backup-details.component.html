@@ -1,0 +1,23 @@
+<div class="section">
+  <div>
+    <input
+      type="file"
+      nwsaveas="dump.sql"
+      style="display: none"
+      #save
+      (change)="backup($event)"
+    />
+    <button mat-raised-button (click)="createBackup()">Create a backup</button>
+  </div>
+  <div style="margin-top: 1em">
+    <input
+      type="file"
+      style="display: none"
+      #restoreFile
+      (change)="restore($event)"
+    />
+    <button mat-raised-button (click)="openFileDialog()">
+      Restore a backup
+    </button>
+  </div>
+</div>

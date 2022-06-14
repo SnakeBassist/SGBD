@@ -6,9 +6,10 @@ import { NgZone } from '@angular/core';
 import { Subject } from 'rxjs';
 
 const mysql = window.nw.require('mysql2');
-const path = window.nw.require('path');
 const child_process = window.nw.require('child_process');
 const fs = window.nw.require('fs');
+const path = window.nw.require('path');
+const mysqldump = window.nw.require('mysqldump');
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +17,9 @@ const fs = window.nw.require('fs');
 export class MysqlService {
   private connection: any;
 
+  currentDb = new Subject();
   dbChanges = new Subject();
+  restored = new Subject();
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -57,6 +60,7 @@ export class MysqlService {
             routeChain.push('db');
             routeChain.push(database);
           }
+          this.currentDb.next(database);
           this.ngZone.run(() => {
             this.router.navigate(routeChain);
           });
@@ -147,38 +151,40 @@ export class MysqlService {
   }
 
   renameDB(newName: string, oldName: string | null) {
-    if (newName === oldName) {
-      return;
+    if (newName !== oldName) {
+      return new Promise(async (resolve, reject) => {
+        if (!this.connection) {
+          return this.noConnection();
+        }
+        try {
+          let { host, port, user, password } =
+            this.connection.config.connectionConfig;
+
+          child_process.execSync(
+            `mysqldump --port ${port} -h ${host} -u ${user} -p${password} -R ${oldName} > backup.sql`
+          );
+
+          await this.createDatabase(newName);
+
+          child_process.execSync(
+            `mysql --port ${port} -h ${host} -u ${user} -p${password} ${newName} < backup.sql`
+          );
+
+          await this.deleteDatabase(oldName);
+
+          fs.unlinkSync('backup.sql');
+
+          resolve('ok');
+        } catch (error: any) {
+          this._snackBar.open('Error: ' + error.message, undefined, {
+            duration: 5000,
+          });
+          reject(error);
+        }
+      });
+    } else {
+      return null;
     }
-    return new Promise(async (resolve, reject) => {
-      if (!this.connection) {
-        return this.noConnection();
-      }
-      try {
-        let { host, port, user, password } = this.connection.config;
-
-        child_process.execSync(
-          `mysqldump --port ${port} -h ${host} -u ${user} -p${password} -R ${oldName} > backup.sql`
-        );
-
-        await this.createDatabase(newName);
-
-        child_process.execSync(
-          `mysql --port ${port} -h ${host} -u ${user} -p${password} ${newName} < backup.sql`
-        );
-
-        await this.deleteDatabase(oldName);
-
-        fs.unlinkSync('backup.sql');
-
-        resolve('ok');
-      } catch (error: any) {
-        this._snackBar.open('Error: ' + error.message, undefined, {
-          duration: 5000,
-        });
-        reject(error);
-      }
-    });
   }
 
   useDB(name: string | null) {
@@ -193,6 +199,7 @@ export class MysqlService {
           });
           reject(error);
         } else {
+          this.currentDb.next(name);
           resolve(result);
         }
       });
@@ -485,20 +492,14 @@ export class MysqlService {
   }
 
   async createView(database: string | null, values: any) {
-    for (var v of values.columns){}
+    for (var v of values.columns) {
+    }
     return new Promise((resolve, reject) => {
       if (!this.connection) {
         return this.noConnection();
-      } this.connection.query('USE ' + database, async (error: any, result: any) => {
-        if (error) {
-          this._snackBar.open('Error: ' + error.message, undefined, {
-            duration: 5000,
-          });
-          reject(error);
-        } else {
-          //toDo change operator values
+      }
       this.connection.query(
-        `CREATE VIEW ${values.name} AS SELECT ${v.selection} FROM ${database}.${v.from} WHERE ${v.where} ${v.operator} ${v.condition};`,
+        'USE ' + database,
         async (error: any, result: any) => {
           if (error) {
             this._snackBar.open('Error: ' + error.message, undefined, {
@@ -506,38 +507,57 @@ export class MysqlService {
             });
             reject(error);
           } else {
-            resolve(result);
+            //toDo change operator values
+            this.connection.query(
+              `CREATE VIEW ${values.name} AS SELECT ${v.selection} FROM ${database}.${v.from} WHERE ${v.where} ${v.operator} ${v.condition};`,
+              async (error: any, result: any) => {
+                if (error) {
+                  this._snackBar.open('Error: ' + error.message, undefined, {
+                    duration: 5000,
+                  });
+                  reject(error);
+                } else {
+                  resolve(result);
+                }
+              }
+            );
           }
         }
-      )};
-      });
-    },)
+      );
+    });
   }
 
-  async removeView(database: string, view: any){
+  async removeView(database: string, view: any) {
     return new Promise((resolve, reject) => {
       if (!this.connection) {
         return this.noConnection();
-      } this.connection.query(`USE ${database}` , async (error: any, result: any) => {
-        if (error) {
-          this._snackBar.open('Error: ' + error.message, undefined, {
-            duration: 5000,
-          });
-          reject(error);
+      }
+      this.connection.query(
+        `USE ${database}`,
+        async (error: any, result: any) => {
+          if (error) {
+            this._snackBar.open('Error: ' + error.message, undefined, {
+              duration: 5000,
+            });
+            reject(error);
+          }
         }
-      })
-      this.connection.query(`DROP VIEW ${view.name}` , async (error: any, result: any) => {
-        if (error) {
-          this._snackBar.open('Error: ' + error.message, undefined, {
-            duration: 5000,
-          });
-          reject(error);
+      );
+      this.connection.query(
+        `DROP VIEW ${view.name}`,
+        async (error: any, result: any) => {
+          if (error) {
+            this._snackBar.open('Error: ' + error.message, undefined, {
+              duration: 5000,
+            });
+            reject(error);
+          }
         }
-      })
-    })
+      );
+    });
   }
 
-  async getUsers(){
+  async getUsers() {
     return new Promise((resolve, reject) => {
       if (!this.connection) {
         return this.noConnection();
@@ -558,7 +578,7 @@ export class MysqlService {
     });
   }
 
-  async createUser(user: any, host: any, pass:any ){
+  async createUser(user: any, host: any, pass: any) {
     return new Promise((resolve, reject) => {
       if (!this.connection) {
         return this.noConnection();
@@ -579,7 +599,7 @@ export class MysqlService {
     });
   }
 
-  async removeUser(user: any){
+  async removeUser(user: any) {
     return new Promise((resolve, reject) => {
       if (!this.connection) {
         return this.noConnection();
@@ -600,5 +620,36 @@ export class MysqlService {
     });
   }
 
+  async createBackup(database, dumpToFile) {
+    let { host, port, user, password } =
+      this.connection.config.connectionConfig;
 
+    await mysqldump({
+      connection: {
+        host,
+        user,
+        password,
+        database,
+        port,
+      },
+      dumpToFile,
+    });
+
+    this._snackBar.open('Dump saved', undefined, {
+      duration: 5000,
+    });
+  }
+
+  async restoreBackup(database, file) {
+    let { host, port, user, password } =
+      this.connection.config.connectionConfig;
+
+    child_process.execSync(
+      `mysql --port ${port} -h ${host} -u ${user} -p${password} ${database} < ${file}`
+    );
+
+    this._snackBar.open('Dump restored', undefined, {
+      duration: 5000,
+    });
+  }
 }

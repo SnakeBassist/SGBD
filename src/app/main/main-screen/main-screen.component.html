@@ -15,33 +15,39 @@
     </mat-selection-list>
   </mat-drawer>
   <mat-drawer-content class="content">
-      <mat-tab-group>
-        <mat-tab label="Main">
-          <router-outlet></router-outlet>
-        </mat-tab>
-        <mat-tab label="Users">
-          <mat-selection-list cass="list" #usr [multiple]="false">
+    <mat-tab-group style="height: calc(100% - 50px)">
+      <mat-tab label="Main">
+        <router-outlet></router-outlet>
+      </mat-tab>
+      <mat-tab label="Users">
+        <mat-selection-list cass="list" #usr [multiple]="false">
           <h2>Users</h2>
 
-            <button mat-raised-button class="actionBtn" color="primary" (click)="openUser()">Create User</button>
-      <hr />
+          <button
+            mat-raised-button
+            class="actionBtn"
+            color="primary"
+            (click)="openUser()"
+          >
+            Create User
+          </button>
+          <hr />
 
           <mat-list-option
-          *ngFor="let usr of users"
-          [value]="usr.user"
-          (click)="openUser(usr.user)"
-          >        {{ usr.user }}
+            *ngFor="let usr of users"
+            [value]="usr.user"
+            (click)="openUser(usr.user)"
+          >
+            {{ usr.user }}
           </mat-list-option>
-          </mat-selection-list>
-        </mat-tab>
+        </mat-selection-list>
+      </mat-tab>
       <mat-tab label="Backup">
-        <h2>Backup</h2>
+        <app-backup-details></app-backup-details>
       </mat-tab>
       <mat-tab label="Procedures">
         <h2>Procedures</h2>
       </mat-tab>
-
-      </mat-tab-group>
-
+    </mat-tab-group>
   </mat-drawer-content>
 </mat-drawer-container>

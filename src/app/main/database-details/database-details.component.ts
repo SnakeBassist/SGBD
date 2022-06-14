@@ -13,7 +13,7 @@ export class DatabaseDetailsComponent implements OnInit {
     name: '',
   });
   database!: any;
-  databaseName!: string | null;
+  databaseName;
   views: any = [];
   tables: any = [];
 
@@ -28,6 +28,16 @@ export class DatabaseDetailsComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.mysql.currentDb.subscribe(
+      (database) => (this.databaseName = database)
+    );
+    this.mysql.restored.subscribe(async () => {
+      let tables = (await this.mysql.getTables(this.databaseName)) as any[];
+
+      this.tables = tables.map((tableData) => {
+        return { name: Object.values(tableData)[0] };
+      });
+    });
     try {
       this.databaseName = this.activatedRoute.snapshot.paramMap.get('name');
       if (this.databaseName !== '--new--') {
@@ -65,7 +75,6 @@ export class DatabaseDetailsComponent implements OnInit {
     } catch (error) {
       console.log(error);
     }
-
   }
 
   save() {
@@ -100,5 +109,4 @@ export class DatabaseDetailsComponent implements OnInit {
       });
     });
   }
-
 }
