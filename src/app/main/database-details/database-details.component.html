@@ -1,48 +1,96 @@
 <div>
-
-    <form class="form" [formGroup]="databaseForm" (submit)="save()">
-        <mat-form-field appearance="fill">
-            <mat-label>Database Name</mat-label>
-            <input formControlName="name" matInput />
-        </mat-form-field>
-        <button mat-raised-button class="actionBtn" color="primary">Save</button>
-        <button type="button" *ngIf="database" mat-flat-button class="actionBtn" color="warn" (click)="delete()">
+  <form class="form" [formGroup]="databaseForm" (submit)="save()">
+    <mat-form-field appearance="fill">
+      <mat-label>Database Name</mat-label>
+      <input formControlName="name" matInput />
+    </mat-form-field>
+    <button mat-raised-button class="actionBtn" color="primary">Save</button>
+    <button
+      type="button"
+      *ngIf="database"
+      mat-flat-button
+      class="actionBtn"
+      color="warn"
+      (click)="delete()"
+    >
       Delete
     </button>
-    </form>
+  </form>
   <hr />
 
-    <mat-tab-group mat-align-tabs="start">
-        <mat-tab label="Tables">
-            <h2>Tables</h2>
-            <mat-selection-list class="list" #dbs [multiple]="false">
-                <button mat-flat-button color="primary" (click)="openTable(databaseName)">
-                  <mat-icon>add</mat-icon>Create table
-                </button>
-                <mat-list-option *ngFor="let table of tables" [value]="table.name" (click)="openTable(databaseName, table.name)">
-                    {{ table.name }}
-                </mat-list-option>
-            </mat-selection-list>
-        </mat-tab>
+  <mat-tab-group mat-align-tabs="start">
+    <mat-tab label="Tables">
+      <h2>Tables</h2>
+      <mat-selection-list class="list" #dbs [multiple]="false">
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="openTable(databaseName)"
+        >
+          <mat-icon>add</mat-icon>Create table
+        </button>
+        <mat-list-option
+          *ngFor="let table of tables"
+          [value]="table.name"
+          (click)="openTable(databaseName, table.name)"
+        >
+          {{ table.name }}
+        </mat-list-option>
+      </mat-selection-list>
+    </mat-tab>
 
-        <mat-tab label="Views">
-            <h2>Views</h2>
-            <mat-selection-list class="list" #dbs [multiple]="false">
-                <button mat-flat-button color="primary" (click)="openView(databaseName)">
-                    <mat-icon>add</mat-icon>Create view
-                </button>
-                <mat-list-option *ngFor="let view of views" [value]="view.name" (click)="openView(databaseName, view.name)">
-                    {{ view.name }}
-                </mat-list-option>
-            </mat-selection-list>
-        </mat-tab>
+    <mat-tab label="Views">
+      <h2>Views</h2>
+      <mat-selection-list class="list" #dbs [multiple]="false">
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="openView(databaseName)"
+        >
+          <mat-icon>add</mat-icon>Create view
+        </button>
+        <mat-list-option
+          *ngFor="let view of views"
+          [value]="view.name"
+          (click)="openView(databaseName, view.name)"
+        >
+          {{ view.name }}
+        </mat-list-option>
+      </mat-selection-list>
+    </mat-tab>
 
-        <mat-tab label="Select">
-          <h2>Select</h2>
-        </mat-tab>
+    <mat-tab label="Select">
+      <h2>Select</h2>
+      <div style="display: flex; flex-direction: column">
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>Procedure Text</mat-label>
+          <textarea [(ngModel)]="sql" matInput cdkFocusInitial></textarea>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="runSql()">
+          Run SQL
+        </button>
+        <hr />
+        <div *ngIf="sqlResult">
+          <table>
+            <thead>
+              <tr>
+                <th *ngFor="let header of tableHeaders">{{ header }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of sqlResult">
+                <td *ngFor="let header of tableHeaders">
+                  {{ item[header] }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </mat-tab>
 
-        <mat-tab label="Triggers">
-          <h2>Triggers</h2>
-        </mat-tab>
+    <mat-tab label="Triggers">
+      <app-triggers [database]="databaseName"></app-triggers>
+    </mat-tab>
   </mat-tab-group>
 </div>

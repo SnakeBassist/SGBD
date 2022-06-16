@@ -1,0 +1,13 @@
+<h2>Triggers</h2>
+<button mat-raised-button color="primary" (click)="openDialog()">
+  Add Trigger
+</button>
+<hr />
+<mat-selection-list class="list" [multiple]="false">
+  <mat-list-option
+    *ngFor="let trigger of triggers"
+    (click)="showTriggerCode(trigger.Trigger)"
+  >
+    {{ trigger.Trigger }}
+  </mat-list-option>
+</mat-selection-list>

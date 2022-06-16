@@ -14,6 +14,9 @@ export class TableDetailsComponent implements OnInit {
   tableDetails!: any;
   columnsToDelete: any = [];
 
+  sqlResult;
+  tableHeaders;
+
   tableForm: FormGroup = this.fb.group({
     name: null,
     columns: this.fb.array([]),
@@ -113,6 +116,8 @@ export class TableDetailsComponent implements OnInit {
           })
         ),
       });
+
+      await this.runSql();
     }
   }
 
@@ -198,5 +203,15 @@ export class TableDetailsComponent implements OnInit {
   async delete() {
     await this.mysql.deleteTable(this.database, this.table);
     this.goBack();
+  }
+
+  async runSql() {
+    let result: any = await this.mysql.runSql('SELECT * FROM ' + this.table);
+    this.sqlResult = result;
+    if (result.length) {
+      this.tableHeaders = Object.keys(result[0]);
+    } else {
+      this.tableHeaders = [];
+    }
   }
 }

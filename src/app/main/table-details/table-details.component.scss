@@ -28,3 +28,13 @@ form {
 .delete-btn {
   zoom: 0.65;
 }
+
+table,
+th,
+td {
+  border: 1px solid;
+}
+
+table {
+  border-collapse: collapse;
+}

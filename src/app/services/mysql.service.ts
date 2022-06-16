@@ -8,7 +8,6 @@ import { Subject } from 'rxjs';
 const mysql = window.nw.require('mysql2');
 const child_process = window.nw.require('child_process');
 const fs = window.nw.require('fs');
-const path = window.nw.require('path');
 const mysqldump = window.nw.require('mysqldump');
 
 @Injectable({
@@ -617,6 +616,108 @@ export class MysqlService {
           }
         }
       );
+    });
+  }
+
+  async getProcedures(database: string) {
+    return new Promise((resolve, reject) => {
+      if (!this.connection) {
+        return this.noConnection();
+      }
+      this.connection.query(
+        `SHOW PROCEDURE STATUS WHERE db = '${database}';`,
+        async (error: any, result: any) => {
+          if (error) {
+            this._snackBar.open('Error: ' + error.message, undefined, {
+              duration: 5000,
+            });
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
+  }
+
+  async getProcedureCode(procedureName: string) {
+    return new Promise((resolve, reject) => {
+      if (!this.connection) {
+        return this.noConnection();
+      }
+      this.connection.query(
+        `SHOW CREATE PROCEDURE ${procedureName};`,
+        async (error: any, result: any) => {
+          if (error) {
+            this._snackBar.open('Error: ' + error.message, undefined, {
+              duration: 5000,
+            });
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
+  }
+
+  async getTriggers(database: string) {
+    return new Promise((resolve, reject) => {
+      if (!this.connection) {
+        return this.noConnection();
+      }
+      this.connection.query(
+        `SHOW TRIGGERS FROM ${database};`,
+        async (error: any, result: any) => {
+          if (error) {
+            this._snackBar.open('Error: ' + error.message, undefined, {
+              duration: 5000,
+            });
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
+  }
+
+  async getTriggerCode(name: string) {
+    return new Promise((resolve, reject) => {
+      if (!this.connection) {
+        return this.noConnection();
+      }
+      this.connection.query(
+        `SHOW CREATE TRIGGER ${name};`,
+        async (error: any, result: any) => {
+          if (error) {
+            this._snackBar.open('Error: ' + error.message, undefined, {
+              duration: 5000,
+            });
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
+  }
+
+  async runSql(sql) {
+    return new Promise((resolve, reject) => {
+      if (!this.connection) {
+        return this.noConnection();
+      }
+      this.connection.query(sql, async (error: any, result: any) => {
+        if (error) {
+          this._snackBar.open('Error: ' + error.message, undefined, {
+            duration: 5000,
+          });
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      });
     });
   }
 

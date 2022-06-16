@@ -1,0 +1,13 @@
+<h2>Procedures</h2>
+<button mat-raised-button color="primary" (click)="openDialog()">
+  Add Procedure
+</button>
+<hr />
+<mat-selection-list class="list" [multiple]="false">
+  <mat-list-option
+    *ngFor="let procedure of procedures"
+    (click)="showProcedureCode(procedure.Name)"
+  >
+    {{ procedure.Name }}
+  </mat-list-option>
+</mat-selection-list>

@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>Procedure</h2>
+<div mat-dialog-content class="content">
+  <mat-form-field appearance="fill" class="form-field">
+    <mat-label>Procedure Text</mat-label>
+    <textarea
+      [disabled]="data.code ? 'disabled' : null"
+      [(ngModel)]="procedureText"
+      matInput
+      style="resize: none; height: 100%"
+      cdkFocusInitial
+    ></textarea>
+  </mat-form-field>
+</div>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button *ngIf="!data.code" mat-raised-button color="primary" (click)="save()">
+    Save
+  </button>
+</mat-dialog-actions>

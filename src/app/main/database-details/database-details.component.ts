@@ -17,6 +17,10 @@ export class DatabaseDetailsComponent implements OnInit {
   views: any = [];
   tables: any = [];
 
+  sql;
+  sqlResult;
+  tableHeaders;
+
   constructor(
     private fb: FormBuilder,
     private mysql: MysqlService,
@@ -108,5 +112,15 @@ export class DatabaseDetailsComponent implements OnInit {
         relativeTo: this.activatedRoute.parent,
       });
     });
+  }
+
+  async runSql() {
+    let result: any = await this.mysql.runSql(this.sql);
+    this.sqlResult = result;
+    if (result.length) {
+      this.tableHeaders = Object.keys(result[0]);
+    } else {
+      this.tableHeaders = [];
+    }
   }
 }

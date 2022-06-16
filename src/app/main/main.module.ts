@@ -16,10 +16,13 @@ import { TableDetailsComponent } from './table-details/table-details.component';
 import { MatSelectModule } from '@angular/material/select';
 import { ViewDetailsComponent } from './view-details/view-details.component';
 import { UserDetailsComponent } from './user-details/user-details.component';
-import { TriggerDetailsComponent } from './trigger-details/trigger-details.component';
 import { BackupDetailsComponent } from './backup-details/backup-details.component';
 import { SelectDetailsComponent } from './select-details/select-details.component';
-
+import { ProceduresComponent } from './procedures/procedures.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ProcedureDialogComponent } from './procedure-dialog/procedure-dialog.component';
+import { TriggersComponent } from './triggers/trigger.component';
+import { TriggerDialogComponent } from './trigger-dialog/trigger-dialog.component';
 
 @NgModule({
   declarations: [
@@ -28,9 +31,12 @@ import { SelectDetailsComponent } from './select-details/select-details.componen
     TableDetailsComponent,
     ViewDetailsComponent,
     UserDetailsComponent,
-    TriggerDetailsComponent,
     BackupDetailsComponent,
     SelectDetailsComponent,
+    ProceduresComponent,
+    ProcedureDialogComponent,
+    TriggersComponent,
+    TriggerDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -45,7 +51,7 @@ import { SelectDetailsComponent } from './select-details/select-details.componen
     MatInputModule,
     MatTabsModule,
     MatSelectModule,
-
+    MatDialogModule,
   ],
 })
 export class MainModule {}
